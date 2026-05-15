@@ -14,16 +14,19 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Lancement des tests...'
-                sh 'pip install -r requirements.txt'
-                sh 'python test.py -v'
+                echo 'Lancement des tests dans Docker...'
+                sh 'docker build -t flask_hello:latest .'
+                sh 'docker run --rm flask_hello python test.py -v'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run App') {
             steps {
-                echo 'Construction de l image Docker...'
-                sh 'docker build -t flask_hello:latest .'
+                echo 'Vérification que l app démarre...'
+                sh 'docker run --rm -d --name flask_test -p 5000:5000 flask_hello'
+                sh 'sleep 3'
+                sh 'docker stop flask_test'
+                echo 'Application démarrée et arrêtée avec succès !'
             }
         }
 
@@ -35,6 +38,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline ÉCHOUÉ !'
+            sh 'docker stop flask_test || true'
         }
     }
 }
