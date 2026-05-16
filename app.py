@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/hello/')
 def hello_world():
-    return 'Hello World!\n'
+    return 'Hello World!\n Test auto deploy with Jenkins and Kubernetes'
 
 @app.route('/hello/<username>')
 def hello_user(username):
