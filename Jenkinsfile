@@ -20,13 +20,19 @@ pipeline {
             }
         }
 
-        stage('Run App') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Vérification que l app démarre...'
-                sh 'docker run --rm -d --name flask_test -p 5000:5000 flask_hello'
-                sh 'sleep 3'
-                sh 'docker stop flask_test'
-                echo 'Application démarrée et arrêtée avec succès !'
+                echo 'Construction de l image Docker...'
+                sh 'docker build -t flask_hello:latest .'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Déploiement sur Kubernetes...'
+                sh 'kubectl apply -f kubernetes/deployment.yaml'
+                sh 'kubectl apply -f kubernetes/service.yaml'
+                sh 'kubectl rollout status deployment/flask-app'
             }
         }
 
@@ -38,7 +44,6 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline ÉCHOUÉ !'
-            sh 'docker stop flask_test || true'
         }
     }
 }
