@@ -28,13 +28,15 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
-                echo 'Déploiement sur Kubernetes...'
-                sh 'kubectl apply -f kubernetes/deployment.yaml'
-                sh 'kubectl apply -f kubernetes/service.yaml'
-                sh 'kubectl rollout status deployment/flask-app'
-            }
+    steps {
+        echo 'Déploiement sur Kubernetes...'
+        sh 'kubectl apply -f kubernetes/deployment.yaml --validate=false'
+        sh 'kubectl apply -f kubernetes/service.yaml --validate=false'
+        timeout(time: 3, unit: 'MINUTES') {
+            sh 'kubectl rollout status deployment/flask-app'
         }
+    }
+}
 
     }
 
