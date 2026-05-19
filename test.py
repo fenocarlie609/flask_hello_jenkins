@@ -25,7 +25,7 @@ class TestHello(unittest.TestCase):
         self.assertIn(bytearray(f"{name}", 'utf-8'), rv.data)
 
     def test_hello_demo(self):
-        rv = self.app.get('/demo/')
+        rv = self.app.get('/hello/demo/')
         self.assertEqual(rv.status, '200 OK')
         self.assertEqual(rv.data, b'Hello World! - Presentation TP before\n')
 
