@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_USER = 'fenocarlie_dockerhub'
+        IMAGE_NAME = "${DOCKERHUB_USER}/flask_hello"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -14,30 +20,37 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Lancement des tests dans Docker...'
-                sh 'docker build -t flask_hello:latest .'
-                sh 'docker run --rm flask_hello python test.py -v'
+                echo 'Lancement des tests...'
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker run --rm ${IMAGE_NAME}:${IMAGE_TAG} python test.py -v"
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Push to Docker Hub') {
             steps {
-                echo 'Construction de l image Docker...'
-                sh 'docker build -t flask_hello:latest .'
+                echo 'Push sur Docker Hub...'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
-    steps {
-        echo 'Déploiement sur Kubernetes...'
-        sh 'kubectl apply -f kubernetes/deployment.yaml --validate=false'
-        sh 'kubectl apply -f kubernetes/service.yaml --validate=false'
-        timeout(time: 3, unit: 'MINUTES') {
-            sh 'kubectl rollout status deployment/flask-app'
+            steps {
+                echo 'Déploiement sur Kubernetes...'
+                sh "kubectl set image deployment/flask-app flask-app=${IMAGE_NAME}:${IMAGE_TAG}"
+                timeout(time: 3, unit: 'MINUTES') {
+                    sh 'kubectl rollout status deployment/flask-app'
+                }
+            }
         }
-    }
-}
-
     }
 
     post {
