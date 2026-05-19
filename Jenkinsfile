@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'fenocarlie_dockerhub'
-        IMAGE_NAME = "${DOCKERHUB_USER}/flask_hello"
+        DOCKERHUB_USER = 'carlie06'
+        IMAGE_NAME = "carlie06/flask_hello"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
