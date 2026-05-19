@@ -12,5 +12,10 @@ def hello_world():
 def hello_user(username):
     return 'Hello %s!\n' % username
 
+@app.route('/demo/')
+def hello_demo():
+    return 'Hello World! - Presentation TP before\n'
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

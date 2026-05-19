@@ -24,5 +24,11 @@ class TestHello(unittest.TestCase):
         self.assertEqual(rv.status, '200 OK')
         self.assertIn(bytearray(f"{name}", 'utf-8'), rv.data)
 
+    def test_hello_demo(self):
+        rv = self.app.get('/demo/')
+        self.assertEqual(rv.status, '200 OK')
+        self.assertEqual(rv.data, b'Hello World! - Presentation TP before\n')
+
+
 if __name__ == '__main__':
     unittest.main()
