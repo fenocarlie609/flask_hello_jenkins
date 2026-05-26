@@ -12,6 +12,10 @@ def hello_world():
 def hello_demo():
     return 'Hello World! - Presentation ENI Master 2 DevOps 2026\n'
 
+@app.route('/hello/demo/<username>')
+def hello_demo(username):
+    return 'Hello %s! - Presentation Tp\n' % username
+
 @app.route('/hello/<username>')
 def hello_user(username):
     return 'Hello %s!\n' % username
