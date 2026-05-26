@@ -8,7 +8,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo 'Récupération du code depuis GitHub...'
@@ -45,10 +44,12 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Déploiement sur Kubernetes...'
-                sh "kubectl set image deployment/flask-app flask-app=${IMAGE_NAME}:${IMAGE_TAG}"
-                timeout(time: 3, unit: 'MINUTES') {
-                    sh 'kubectl rollout status deployment/flask-app'
-                }
+                sh """
+                    CONTAINER_NAME=\$(kubectl get deployment flask-app -o jsonpath='{.spec.template.spec.containers[0].name}')
+                    echo "Container name: \$CONTAINER_NAME"
+                    kubectl set image deployment/flask-app \${CONTAINER_NAME}=${IMAGE_NAME}:${IMAGE_TAG}
+                    kubectl rollout status deployment/flask-app --timeout=3m
+                """
             }
         }
     }
