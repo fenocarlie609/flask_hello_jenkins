@@ -27,7 +27,7 @@ class TestHello(unittest.TestCase):
     def test_hello_demo(self):
         rv = self.app.get('/hello/demo/')
         self.assertEqual(rv.status, '200 OK')
-        self.assertEqual(rv.data, b'Hello World! - Presentation ENI Master 2 DevOps 2026\n')
+        self.assertEqual(rv.data, b'Hello World! - Presentation DevOps\n')
 
     def test_hello_demo_name(self):
         name = 'Simon'

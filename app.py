@@ -10,7 +10,7 @@ def hello_world():
 
 @app.route('/hello/demo/')
 def hello_demo():
-    return 'Hello World! - Presentation ENI Master 2 DevOps 2026\n'
+    return 'Hello World! - Presentation DevOps\n'
 
 @app.route('/hello/demo/<username>')
 def hello_demo_user(username):          # ← renommé ici
